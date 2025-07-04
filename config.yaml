@@ -1,11 +1,5 @@
 model:
-  app_id: local-dev-runner-app
-  id: local-dev-model
-  model_type_id: text-to-text
-  user_id: srikanthbachala
-build_info:
-  python_version: '3.11'
-inference_compute_info:
-  cpu_limit: 50m
-  cpu_memory: 250Mi
-  num_accelerators: 0
+  id: "my-model-id"
+  user_id: "my-user-id"
+  app_id: "my-app-id"
+  model_type_id: "text-to-text"
