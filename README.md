@@ -18,38 +18,6 @@ Before setting up this repository, ensure you have:
 - Git
 - A Clarifai account
 
-## Installation
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/srikanthbachala20/model-test-repo.git
-cd model-test-repo
-```
-
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-This will install the Clarifai SDK and all required dependencies.
-
-### 3. Verify Installation
-Test that the model works locally:
-```bash
-python 1/model.py
-```
-
-You should see output from both the `predict` and `generate` methods.
-
-## Local Development and Testing
-
-### Testing the Model Locally
-
-The simplest way to test your model is to run it directly:
-```bash
-python 1/model.py
-```
-
 ### Using Clarifai CLI for Local Testing
 
 The Clarifai CLI provides several commands for local model development:
