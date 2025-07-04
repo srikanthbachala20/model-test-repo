@@ -1,7 +1,7 @@
 model:
-  id: "my-model-id"
-  user_id: "my-user-id"
-  app_id: "my-app-id"
+  id: "model-id"
+  user_id: "user-id"
+  app_id: "app-id"
   model_type_id: "text-to-text"
 
 build_info:

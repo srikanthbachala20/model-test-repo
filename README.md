@@ -1,4 +1,4 @@
-# Clarifai Model Test Repository
+# Clarifai Local Runner Setup
 
 This repository demonstrates how to create and set up Clarifai local runners for custom model development. It contains a sample text-to-text model that performs string manipulation operations.
 
@@ -13,10 +13,10 @@ This repository contains a sample Clarifai model implementation that:
 ## Prerequisites
 
 Before setting up this repository, ensure you have:
-- Python 3.8+ installed
+- Python 3.11+ installed
 - pip package manager
 - Git
-- A Clarifai account (for uploading models, optional for local development)
+- A Clarifai account
 
 ## Installation
 
@@ -54,122 +54,84 @@ python 1/model.py
 
 The Clarifai CLI provides several commands for local model development:
 
-#### 1. Test Model Locally
+#### 1. Install the Clarifai Python SDK
+
+Install the latest version of the Clarifai Python SDK:
+
 ```bash
-clarifai model test-locally
+pip install clarifai
 ```
 
-#### 2. Run Model as Local Runner
+#### 2. Set Up Authentication
+
+1. Go to Clarifai Security Settings
+2. Create a new Personal Access Token (PAT)
+3. Set it as an environment variable and Login to Clarifai CLI
+
 ```bash
-clarifai model run-locally
+export CLARIFAI_PAT="your_personal_access_token_here"
 ```
 
-This starts a gRPC server that serves your model locally, simulating how it would run in production.
 
-#### 3. Local Development Mode
-```bash
-clarifai model local-dev
-```
+#### 3. Login to Clarifai CLI
 
-This connects your local model to the Clarifai platform for testing while keeping the model running locally.
-
-### Testing Different Model Methods
-
-The sample model provides three different methods:
-
-#### Predict Method
-Single input/output prediction:
-```python
-model = MyModel()
-model.load_model()
-result = model.predict("Hello", number_of_letters=5)
-print(result)  # Output: Hello-AbCdE
-```
-
-#### Generate Method
-Streaming generation of multiple outputs:
-```python
-model = MyModel()
-model.load_model()
-for result in model.generate("Test", number_of_letters=3):
-    print(result)  # Generates 10 variations
-```
-
-#### Stream Processing Method
-Process an iterator of inputs:
-```python
-model = MyModel()
-model.load_model()
-inputs = ["input1", "input2", "input3"]
-for result in model.s(iter(inputs), number_of_letters=4):
-    print(result)
-```
-
-## Configuration
-
-### Model Configuration (config.yaml)
-The `config.yaml` file contains essential model metadata and resource requirements:
-```yaml
-model:
-  id: "my-model-id"           # Unique identifier for your model
-  user_id: "my-user-id"       # Your Clarifai user ID
-  app_id: "my-app-id"         # Your Clarifai app ID
-  model_type_id: "text-to-text"  # Type of model (text-to-text, image-to-text, etc.)
-
-build_info:
-  python_version: "3.12"      # Python version to use
-
-inference_compute_info:
-  cpu_limit: "1"              # Maximum CPU cores
-  cpu_memory: "1Gi"           # Maximum memory
-  cpu_requests: "0.5"         # Minimum CPU cores
-  cpu_memory_requests: "512Mi" # Minimum memory
-  num_accelerators: 0         # Number of GPUs (0 for CPU-only)
-  accelerator_type: ["NVIDIA-*"] # GPU type if using accelerators
-  accelerator_memory: "1Gi"   # GPU memory if using accelerators
-```
-
-**Important**: Update the `model`, `user_id`, and `app_id` values according to your Clarifai setup. The `inference_compute_info` section is required for local testing and deployment.
-
-### Model Parameters
-The model accepts the following parameter:
-- `number_of_letters` (int, default=3): Number of random letters to append to the input string
-
-## Project Structure
-
-```
-model-test-repo/
-├── 1/
-│   └── model.py          # Main model implementation
-├── config.yaml           # Model configuration
-├── requirements.txt      # Python dependencies
-└── README.md             # This documentation
-```
-
-### Model Implementation Details
-
-The `MyModel` class in `1/model.py`:
-- Inherits from `clarifai.runners.models.model_class.ModelClass`
-- Implements required `load_model()` method
-- Uses `@ModelClass.method` decorator for exposed methods
-- Uses `Param` class for parameter definitions with defaults and descriptions
-
-## Uploading to Clarifai Platform
-
-Once you've tested your model locally and are satisfied with its performance:
-
-### 1. Configure Authentication
 ```bash
 clarifai login
 ```
 
-### 2. Upload the Model
+Fill the details requested during login
+
+
+#### 4. Setup the Model Codebase
+
+To start developing a model from scratch:
+
 ```bash
-clarifai model upload
+clarifai model init <codebase-path>
 ```
 
-### 3. Deploy the Model
-Follow the Clarifai documentation to deploy your model to a compute cluster.
+Else if you have a codebase on git already:
+
+```bash
+clarifai model init <codebase-path> --github-repo <user>/<repo> --github-pat <github-token>
+```
+
+This sets up your codebase to develop.
+
+
+#### 5. Start your Local Runner
+
+Now, you can start your local runner:
+
+```bash
+clarifai model local-runner <codebase-path>
+```
+
+This connects your local model to the Clarifai platform for testing while keeping the model running locally.
+
+
+
+### Test your Local Runner
+
+Once your runner is started, you can test it with a simple prediction:
+
+```bash
+from clarifai.client import Model
+from clarifai.runners.utils import data_types
+
+model = Model("https://clarifai.com/<user-id>/local-dev-runner-app/models/local-dev-model",
+    deployment_id = 'local-dev-deployment', # Only needed for dedicated deployed models
+    base_url='https://api.clarifai.com',
+ )
+
+    
+# Example model prediction from different model methods: 
+
+response = model.predict(prompt="What is the future of AI?", number_of_letters=3)
+print(response)
+```
+
+
 
 ## Advanced Usage
 
@@ -195,13 +157,8 @@ To add additional Python packages:
 2. **Model Not Loading**: Check that your model class inherits from `ModelClass` and implements `load_model()`
 3. **Configuration Errors**: Verify your `config.yaml` has valid user_id, app_id, and model_id values
 4. **"inference_compute_info not found" Error**: Ensure your `config.yaml` includes the complete `inference_compute_info` section as shown in the configuration example
-5. **Network Timeouts**: If `clarifai model test-locally` fails due to network issues, try testing the model directly with `python 1/model.py` first
 
 ### Getting Help
 - Check the [Clarifai Documentation](https://docs.clarifai.com/)
 - Use `clarifai --help` for CLI command help
 - Use `clarifai model --help` for model-specific commands
-
-## Contributing
-
-This repository serves as a template for Clarifai model development. Feel free to fork and modify it for your own model implementations.
