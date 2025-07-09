@@ -2,14 +2,6 @@
 
 This repository demonstrates how to create and set up Clarifai local runners for custom model development. It contains a sample text-to-text model that performs string manipulation operations.
 
-## Overview
-
-This repository contains a sample Clarifai model implementation that:
-- Inherits from Clarifai's `ModelClass`
-- Implements three different model methods: `predict`, `generate`, and `s` (stream processing)
-- Demonstrates best practices for local model development and testing
-- Shows how to configure and run models locally using Clarifai runners
-
 ## Prerequisites
 
 Before setting up this repository, ensure you have:
@@ -27,21 +19,10 @@ The Clarifai CLI provides several commands for local model development:
 Install the latest version of the Clarifai Python SDK:
 
 ```bash
-pip install clarifai
+pip install -U clarifai
 ```
 
-#### 2. Set Up Authentication
-
-1. Go to Clarifai Security Settings
-2. Create a new Personal Access Token (PAT)
-3. Set it as an environment variable and Login to Clarifai CLI
-
-```bash
-export CLARIFAI_PAT="your_personal_access_token_here"
-```
-
-
-#### 3. Login to Clarifai CLI
+#### 2. Login to Clarifai CLI
 
 ```bash
 clarifai login
@@ -50,12 +31,12 @@ clarifai login
 Fill the details requested during login
 
 
-#### 4. Setup the Model Codebase
+#### 3. Setup the Model Codebase
 
-To start developing a model from scratch:
+To setup a new codebase:
 
 ```bash
-clarifai model init <codebase-path>
+clarifai model init
 ```
 
 Else if you have a codebase on git already:
@@ -67,12 +48,12 @@ clarifai model init <codebase-path> --github-repo <user>/<repo> --github-pat <gi
 This sets up your codebase to develop.
 
 
-#### 5. Start your Local Runner
+#### 4. Start your Local Runner
 
 Now, you can start your local runner:
 
 ```bash
-clarifai model local-runner <codebase-path>
+clarifai model local-runner
 ```
 
 This connects your local model to the Clarifai platform for testing while keeping the model running locally.
@@ -81,11 +62,18 @@ This connects your local model to the Clarifai platform for testing while keepin
 
 ### Test your Local Runner
 
+#### Set Clarifai PAT
+Refer this [guide](https://docs.clarifai.com/control/authentication/pat/#how-to-create-a-pat-on-the-platform) on how to obtain one from the platform.
+
+#### Inference using SDK
 Once your runner is started, you can test it with a simple prediction:
 
 ```bash
+import os
 from clarifai.client import Model
 from clarifai.runners.utils import data_types
+
+os.environ["CLARIFAI_PAT"] = "YOUR_PAT_HERE"
 
 model = Model("https://clarifai.com/<user-id>/local-dev-runner-app/models/local-dev-model",
     deployment_id = 'local-dev-deployment', # Only needed for dedicated deployed models
